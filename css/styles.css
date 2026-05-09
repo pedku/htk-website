@@ -146,13 +146,15 @@ img {
 }
 
 .nav-logo {
-  height: 38px;
+  height: 40px;
   width: auto;
   object-fit: contain;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: crisp-edges;
 }
 
 #mainNav.navbar-scrolled .nav-logo {
-  height: 34px;
+  height: 36px;
 }
 
 .brand-accent {
