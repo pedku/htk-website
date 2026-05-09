@@ -300,23 +300,29 @@
      ========================================================== */
 
   function initParticles() {
+    var hero = document.getElementById('hero');
     var canvas = document.getElementById('particlesCanvas');
-    if (!canvas) return;
+    if (!canvas || !hero) return;
 
     var ctx = canvas.getContext('2d');
     var particles = [];
     var maxParticles = 100;
     var animationId;
+    var w, h;
 
     function resizeCanvas() {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      // Usar dimensiones del hero, no del canvas (más confiable)
+      var rect = hero.getBoundingClientRect();
+      w = rect.width;
+      h = rect.height;
+      canvas.width = w;
+      canvas.height = h;
     }
 
     function createParticle() {
       return {
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
+        x: Math.random() * w,
+        y: Math.random() * h,
         vx: (Math.random() - 0.5) * 0.6,
         vy: (Math.random() - 0.5) * 0.6,
         radius: Math.random() * 2.5 + 1.0,
@@ -336,7 +342,7 @@
     }
 
     function drawParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, w, h);
 
       particles.forEach(function (p) {
         // Update alpha
@@ -349,11 +355,11 @@
         p.x += p.vx;
         p.y += p.vy;
 
-        // Wrap around
-        if (p.x < -20) p.x = canvas.width + 20;
-        if (p.x > canvas.width + 20) p.x = -20;
-        if (p.y < -20) p.y = canvas.height + 20;
-        if (p.y > canvas.height + 20) p.y = -20;
+        // Wrap around using full hero dimensions
+        if (p.x < -20) p.x = w + 20;
+        if (p.x > w + 20) p.x = -20;
+        if (p.y < -20) p.y = h + 20;
+        if (p.y > h + 20) p.y = -20;
 
         // Draw with glow effect
         ctx.beginPath();
@@ -418,6 +424,23 @@
         initParticlesArray();
       }, 250);
     });
+
+    // Re-init after all images/logo load (hero height may change)
+    window.addEventListener('load', function () {
+      setTimeout(function () {
+        resizeCanvas();
+        initParticlesArray();
+      }, 500);
+    });
+
+    // Also re-init when hero logo image loads
+    var heroLogo = document.querySelector('.hero-logo');
+    if (heroLogo) {
+      heroLogo.addEventListener('load', function () {
+        resizeCanvas();
+        initParticlesArray();
+      });
+    }
 
     document.addEventListener('visibilitychange', handleVisibility);
 
